@@ -1,6 +1,3 @@
-import com.gradle.publish.PublishPlugin
-import org.gradle.api.java.archives.Manifest
-import org.gradle.api.plugins.JavaPluginConvention
 import org.gradle.kotlin.dsl.*
 
 plugins {
@@ -18,11 +15,21 @@ repositories {
     mavenCentral()
 }
 
+pluginBundle {
+    website = "https://skidfuscator.dev/"
+    vcsUrl = "https://github.com/ChromMob/skidfuscatorgradle"
+    description = "A gradle plugin to obfuscate your code. Simply put skidfuscator.jar into into projectFolder/skidfuscator/"
+    tags = listOf("obfuscation", "skidfuscator")
+}
+
 gradlePlugin {
+
     plugins {
         register("skidfuscator") {
+            displayName = "SkidfuscatorGradle"
             id = "me.chrommob.skidfuscatorgradle"
             implementationClass = "me.chrommob.skidfuscatorgradle.SkidFuscatorPlugin"
+            description = "A gradle plugin to obfuscate your code. Simply put skidfuscator.jar into into projectFolder/skidfuscator/"
         }
     }
 }

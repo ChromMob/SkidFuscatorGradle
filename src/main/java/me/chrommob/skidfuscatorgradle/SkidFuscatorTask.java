@@ -8,15 +8,13 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Comparator;
-import java.util.List;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 
 
 public class SkidFuscatorTask extends DefaultTask {
     private final File skidfuscatorJar = new File(getProject().getProjectDir() + File.separator + "skidfuscator", "skidfuscator.jar");
     private final File skidfuscatorFolder = new File(getProject().getProjectDir() + File.separator + "skidfuscator");
+    private final File mavenRepo = new File(System.getProperty("user.home") + File.separator + ".m2" + File.separator + "repository");
     @TaskAction
     /**
      * Runs the obfuscation.
@@ -28,25 +26,38 @@ public class SkidFuscatorTask extends DefaultTask {
         if (output.listFiles() == null || Objects.requireNonNull(output.listFiles()).length == 0) {
             throw  new RuntimeException("No output file to obfuscate.");
         }
-        for (File file : skidfuscatorFolder.listFiles()) {
-            if (!file.getName().equals("skidfuscator.jar")) {
-                try {
-                    Files.walk(file.toPath())
-                            .sorted(Comparator.reverseOrder())
-                            .map(Path::toFile)
-                            .forEach(File::delete);
-                } catch (IOException e) {
-                    throw new RuntimeException(e);
-                }
+        for (File file : Objects.requireNonNull(skidfuscatorFolder.listFiles())) {
+            if (!file.getName().equals("skidfuscator.jar") && !file.getName().equals("manualLibs")) {
+                deleteDirectory(file);
             }
         }
+        DependencyFinder dependencyFinder = new DependencyFinder(mavenRepo, skidfuscatorFolder);
         Set<File> compileLibs = getProject().getConfigurations().getByName("compileClasspath").getFiles();
+        Set<File> depJars = getProject().getConfigurations().getByName("compileClasspath").getFiles();
+        for (File depJar : depJars) {
+            File parent = depJar.getParentFile();
+            if (parent == null)
+                continue;
+            File version = parent.getParentFile();
+            if (version == null)
+                continue;
+            File artifact = version.getParentFile();
+            if (artifact == null)
+                continue;
+            File group = artifact.getParentFile();
+            if (group == null)
+                continue;
+            System.out.println("Found dependency: " + group.getName() + ":" + artifact.getName() + ":" + version.getName());
+            Dependency dep = new Dependency(dependencyFinder, group.getName(), artifact.getName(), version.getName(), Collections.singleton("https://repo1.maven.org/maven2/"));
+            compileLibs.addAll(dep.getFiles());
+        }
         new File(skidfuscatorFolder + File.separator + "libs").mkdirs();
         for (File lib : compileLibs) {
+            if (lib == null)
+                continue;
             try {
                 Files.copy(lib.toPath(), new File(skidfuscatorFolder + File.separator + "libs" + File.separator + lib.getName()).toPath());
-            } catch (IOException e) {
-                throw new RuntimeException(e);
+            } catch (IOException ignored) {
             }
         }
         for (File outPutFile : Objects.requireNonNull(output.listFiles())) {
@@ -68,5 +79,15 @@ public class SkidFuscatorTask extends DefaultTask {
             javaExec.exec();
             System.out.println("File successfully obfuscated.");
         }
+    }
+
+    private void deleteDirectory(File directoryToBeDeleted) {
+        File[] allContents = directoryToBeDeleted.listFiles();
+        if (allContents != null) {
+            for (File file : allContents) {
+                deleteDirectory(file);
+            }
+        }
+        directoryToBeDeleted.delete();
     }
 }
