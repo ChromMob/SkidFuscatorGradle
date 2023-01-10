@@ -43,3 +43,7 @@ tasks.getByName<Test>("test") {
     useJUnitPlatform()
 }
 
+tasks.wrapper {
+    gradleVersion = "4.10"
+}
+
