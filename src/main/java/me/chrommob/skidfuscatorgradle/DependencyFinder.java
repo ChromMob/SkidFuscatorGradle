@@ -112,21 +112,21 @@ public class DependencyFinder {
                     continue;
                 }
                 if (version.contains("${")) {
-                    String property = version.replace("${", "").replace("}", "");
+                    String property = version.substring(version.indexOf("${") + 2, version.indexOf("}"));
                     if (!(document.getElementsByTagName(property).getLength() == 0 || document.getElementsByTagName(property).item(0) == null)) {
-                        version = document.getElementsByTagName(property).item(0).getTextContent();
+                        version = version.replace("${" + property + "}", document.getElementsByTagName(property).item(0).getTextContent());
                     }
                 }
                 if (groupId.contains("${")) {
-                    String property = groupId.replace("${", "").replace("}", "");
+                    String property = groupId.substring(groupId.indexOf("${") + 2, groupId.indexOf("}"));
                     if (!(document.getElementsByTagName(property).getLength() == 0 || document.getElementsByTagName(property).item(0) == null)) {
-                        groupId = document.getElementsByTagName(property).item(0).getTextContent();
+                        groupId = groupId.replace("${" + property + "}", document.getElementsByTagName(property).item(0).getTextContent());
                     }
                 }
                 if (artifactId.contains("${")) {
-                    String property = artifactId.replace("${", "").replace("}", "");
+                    String property = artifactId.substring(artifactId.indexOf("${") + 2, artifactId.indexOf("}"));
                     if (!(document.getElementsByTagName(property).getLength() == 0 || document.getElementsByTagName(property).item(0) == null)) {
-                        artifactId = document.getElementsByTagName(property).item(0).getTextContent();
+                        artifactId = artifactId.replace("${" + property + "}", document.getElementsByTagName(property).item(0).getTextContent());
                     }
                 }
                 Dependency subDependency = new Dependency(this, groupId, artifactId, version, repositories);
