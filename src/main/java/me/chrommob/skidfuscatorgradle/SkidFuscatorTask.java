@@ -15,6 +15,7 @@ public class SkidFuscatorTask extends DefaultTask {
     private final File skidfuscatorJar = new File(getProject().getProjectDir() + File.separator + "skidfuscator", "skidfuscator.jar");
     private final File skidfuscatorFolder = new File(getProject().getProjectDir() + File.separator + "skidfuscator");
     private final File mavenRepo = new File(System.getProperty("user.home") + File.separator + ".m2" + File.separator + "repository");
+    private final File exclusionFile = new File(skidfuscatorFolder, "exclusions.txt");
     @TaskAction
     /**
      * Runs the obfuscation.
@@ -75,6 +76,9 @@ public class SkidFuscatorTask extends DefaultTask {
             javaExec.setWorkingDir(outputFolder);
             javaExec.getAllJvmArgs().add("-jar");
             javaExec.setArgs(List.of(new File(outputFolder + File.separator + outPutFile.getName()).getAbsolutePath(), "-li=" + new File(skidfuscatorFolder + File.separator + "libs")));
+            if (exclusionFile.exists()) {
+                javaExec.getArgs().add("-ex=" + exclusionFile.getAbsolutePath());
+            }
             javaExec.setClasspath(getProject().files().from(skidfuscatorJar));
             javaExec.exec();
             System.out.println("File successfully obfuscated.");

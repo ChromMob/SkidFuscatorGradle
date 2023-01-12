@@ -70,7 +70,7 @@ public class DependencyFinder {
         try {
             document = dBuilder.parse(pom);
         } catch (IOException | SAXException e) {
-            throw new RuntimeException(e);
+            return new HashSet<>();
         }
         document.getDocumentElement().normalize();
         Set<String> repositories = new HashSet<>();
