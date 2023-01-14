@@ -57,8 +57,14 @@ public class DependencyFinder {
 
     private Set<Dependency> getSubDependencies(File file) {
         File parent = file.getParentFile();
-        File pom = new File(parent, file.getName().replace(".jar", ".pom"));
-        if (!pom.exists()) {
+        File pom = null;
+        for (File possiblePom : parent.listFiles()) {
+            if (possiblePom.getName().endsWith(".pom")) {
+                pom = possiblePom;
+                break;
+            }
+        }
+        if (pom == null) {
             System.out.println("Could not find pom for " + file.getName());
             return new HashSet<>();
         }
