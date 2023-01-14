@@ -1,1 +1,1 @@
-rootProject.name = "skidfuscatorgradle"
+rootProject.name = "SkidFuscatorGradle"
