@@ -18,6 +18,8 @@ import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.HashSet;
 import java.util.Set;
+import java.util.zip.ZipException;
+import java.util.zip.ZipFile;
 
 public class DependencyFinder {
     private final File mavenDirectory;
@@ -160,7 +162,9 @@ public class DependencyFinder {
             try (InputStream inputStream = connection.getInputStream()) {
                 Files.copy(inputStream, temp.toPath(), StandardCopyOption.REPLACE_EXISTING);
             }
-            if (temp.length() == 0) {
+            try{
+                new ZipFile(temp);
+            } catch (ZipException e) {
                 return null;
             }
             if (!file.exists()) {
@@ -216,6 +220,15 @@ public class DependencyFinder {
         }
         for (File f : files) {
             if (f.getName().endsWith(".jar")) {
+                try {
+                    new ZipFile(f);
+                } catch (ZipException e) {
+                    System.out.println("Corrupted file: " + f.getAbsolutePath());
+                    f.delete();
+                    continue;
+                } catch (IOException e) {
+                    continue;
+                }
                 return f;
             }
         }
