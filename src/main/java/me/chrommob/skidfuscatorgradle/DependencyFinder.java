@@ -51,6 +51,7 @@ public class DependencyFinder {
                 return new DependencyResponse(file, subDependencies);
             }
         }
+        System.out.println("Could not find dependency " + dependency.getGroupId() + ":" + dependency.getArtifactId() + ":" + dependency.getVersion());
         return null;
     }
 
@@ -77,7 +78,6 @@ public class DependencyFinder {
         document.getDocumentElement().normalize();
         Set<String> repositories = new HashSet<>();
         NodeList nodeList;
-        System.out.println("Getting sub dependencies for " + file.getAbsolutePath());
         if (document.getElementsByTagName("repository").getLength() != 0) {
             nodeList = document.getElementsByTagName("repository");
             for (int i = 0; i < nodeList.getLength(); i++) {
@@ -135,6 +135,7 @@ public class DependencyFinder {
                 dependencies.add(subDependency);
             }
         }
+        System.out.println("Found " + dependencies + " for " + file.getAbsolutePath());
         return dependencies;
     }
 
