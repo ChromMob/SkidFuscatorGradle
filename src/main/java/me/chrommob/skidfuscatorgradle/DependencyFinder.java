@@ -137,7 +137,6 @@ public class DependencyFinder {
     }
 
     private File getFromRepository(String repository, String groupId, String artifactId, String version) {
-        System.out.println("Downloading " + groupId + ":" + artifactId + ":" + version + " from " + repository);
         String url = repository + groupId.replace(".", "/") + "/" + artifactId + "/" + version + "/" + artifactId + "-" + version + ".jar";
         String[] split = groupId.split("\\.");
         File file = mavenDirectory;
@@ -200,7 +199,6 @@ public class DependencyFinder {
             System.out.println("Downloaded " + groupId + ":" + artifactId + ":" + version + " from " + repository);
             return finalFile;
         } catch (IOException e) {
-            System.out.println("Failed to download " + groupId + ":" + artifactId + ":" + version + " from " + repository);
             return null;
         }
     }
