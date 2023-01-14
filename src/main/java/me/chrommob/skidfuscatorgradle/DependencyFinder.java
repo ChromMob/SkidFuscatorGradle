@@ -59,6 +59,7 @@ public class DependencyFinder {
         File parent = file.getParentFile();
         File pom = new File(parent, file.getName().replace(".jar", ".pom"));
         if (!pom.exists()) {
+            System.out.println("Could not find pom for " + file.getName());
             return new HashSet<>();
         }
         Set<Dependency> dependencies = new HashSet<>();
@@ -73,6 +74,7 @@ public class DependencyFinder {
         try {
             document = dBuilder.parse(pom);
         } catch (IOException | SAXException e) {
+            System.out.println("Could not parse pom for " + file.getName());
             return new HashSet<>();
         }
         document.getDocumentElement().normalize();
