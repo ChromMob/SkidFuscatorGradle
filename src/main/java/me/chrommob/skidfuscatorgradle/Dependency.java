@@ -50,7 +50,6 @@ public class Dependency {
             subDependencies = response.getSubDependencies();
             return response.getDependency();
         }
-
     }
 
     @Override
