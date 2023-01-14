@@ -9,6 +9,8 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.util.*;
+import java.util.zip.ZipException;
+import java.util.zip.ZipFile;
 
 
 public class SkidFuscatorTask extends DefaultTask {
@@ -48,6 +50,18 @@ public class SkidFuscatorTask extends DefaultTask {
             try {
                 Files.copy(lib.toPath(), new File(skidfuscatorFolder + File.separator + "libs" + File.separator + lib.getName()).toPath());
             } catch (IOException ignored) {
+            }
+        }
+        for (File lib: Objects.requireNonNull(new File(skidfuscatorFolder + File.separator + "libs").listFiles())) {
+            if (lib.getName().endsWith(".jar")) {
+                try {
+                    new ZipFile(lib).close();
+                } catch (ZipException e) {
+                    System.out.println("Deleting " + lib.getName() + " because it is not a valid jar.");
+                    lib.delete();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
             }
         }
         for (File outPutFile : Objects.requireNonNull(output.listFiles())) {
