@@ -58,10 +58,14 @@ public class DependencyFinder {
     private Set<Dependency> getSubDependencies(File file) {
         File parent = file.getParentFile();
         File pom = null;
-        for (File possiblePom : parent.listFiles()) {
-            if (possiblePom.getName().endsWith(".pom")) {
-                pom = possiblePom;
-                break;
+        if (new File(parent, file.getName().replace(".jar", ".pom")).exists()) {
+            pom = new File(parent, file.getName().replace(".jar", ".pom"));
+        } else {
+            for (File possiblePom : parent.listFiles()) {
+                if (possiblePom.getName().endsWith(".pom")) {
+                    pom = possiblePom;
+                    break;
+                }
             }
         }
         if (pom == null) {
