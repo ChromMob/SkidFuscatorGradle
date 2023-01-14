@@ -128,19 +128,22 @@ public class DependencyFinder {
                 if (version.contains("${")) {
                     String property = version.substring(version.indexOf("${") + 2, version.indexOf("}"));
                     if (!(document.getElementsByTagName(property).getLength() == 0 || document.getElementsByTagName(property).item(0) == null)) {
-                        version = version.replace("${" + property + "}", document.getElementsByTagName(property).item(0).getTextContent());
+                        String propertyValue = removeEverythingExceptLettersAndNumbers(document.getElementsByTagName(property).item(0).getTextContent());
+                        version = version.replace("${" + property + "}", propertyValue);
                     }
                 }
                 if (groupId.contains("${")) {
                     String property = groupId.substring(groupId.indexOf("${") + 2, groupId.indexOf("}"));
                     if (!(document.getElementsByTagName(property).getLength() == 0 || document.getElementsByTagName(property).item(0) == null)) {
-                        groupId = groupId.replace("${" + property + "}", document.getElementsByTagName(property).item(0).getTextContent());
+                        String propertyValue = removeEverythingExceptLettersAndNumbers(document.getElementsByTagName(property).item(0).getTextContent());
+                        groupId = groupId.replace("${" + property + "}", propertyValue);
                     }
                 }
                 if (artifactId.contains("${")) {
                     String property = artifactId.substring(artifactId.indexOf("${") + 2, artifactId.indexOf("}"));
                     if (!(document.getElementsByTagName(property).getLength() == 0 || document.getElementsByTagName(property).item(0) == null)) {
-                        artifactId = artifactId.replace("${" + property + "}", document.getElementsByTagName(property).item(0).getTextContent());
+                        String propertyValue = removeEverythingExceptLettersAndNumbers(document.getElementsByTagName(property).item(0).getTextContent());
+                        artifactId = artifactId.replace("${" + property + "}", propertyValue);
                     }
                 }
                 Dependency subDependency = new Dependency(this, groupId, artifactId, version, repositories);
@@ -149,6 +152,11 @@ public class DependencyFinder {
         }
         System.out.println("Found " + dependencies + " for " + file.getAbsolutePath());
         return dependencies;
+    }
+
+    private String removeEverythingExceptLettersAndNumbers(String string) {
+        //Keep "-" and "." for versions
+        return string.replaceAll("[^a-zA-Z0-9.-]", "");
     }
 
     private File getFromRepository(String repository, String groupId, String artifactId, String version) {
@@ -165,7 +173,6 @@ public class DependencyFinder {
         try {
             URLConnection connection = new URL(url).openConnection();
             connection.setConnectTimeout(10000);
-            connection.setReadTimeout(10000);
             connection.connect();
             temp = new File(temp, artifactId + "-" + version + ".jar");
             if (temp.exists()) {
@@ -176,7 +183,7 @@ public class DependencyFinder {
                 Files.copy(inputStream, temp.toPath(), StandardCopyOption.REPLACE_EXISTING);
             }
             try{
-                new ZipFile(temp);
+                new ZipFile(temp).close();
             } catch (ZipException e) {
                 return null;
             }
@@ -190,7 +197,6 @@ public class DependencyFinder {
 
             connection = new URL(url.replace(".jar", ".pom")).openConnection();
             connection.setConnectTimeout(10000);
-            connection.setReadTimeout(10000);
             connection.connect();
 
             temp = new File(temp.getParentFile(), artifactId + "-" + version + ".pom");
@@ -231,10 +237,11 @@ public class DependencyFinder {
         if (files == null) {
             return null;
         }
+        String fileName = artifactId + "-" + version + ".jar";
         for (File f : files) {
-            if (f.getName().endsWith(".jar")) {
+            if (f.getName().equals(fileName)) {
                 try {
-                    new ZipFile(f);
+                    new ZipFile(f).close();
                 } catch (ZipException e) {
                     System.out.println("Corrupted file: " + f.getAbsolutePath());
                     f.delete();
