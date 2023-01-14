@@ -28,7 +28,7 @@ public class SkidFuscatorTask extends DefaultTask {
             throw  new RuntimeException("No output file to obfuscate.");
         }
         for (File file : Objects.requireNonNull(skidfuscatorFolder.listFiles())) {
-            if (!file.getName().equals("skidfuscator.jar") && !file.getName().equals("manualLibs")) {
+            if (!file.getName().equals("skidfuscator.jar") && !file.getName().equals("manualLibs") && !file.getName().equals("exclusions.txt")) {
                 deleteDirectory(file);
             }
         }
@@ -64,7 +64,7 @@ public class SkidFuscatorTask extends DefaultTask {
             JavaExec javaExec = getProject().getTasks().create("run" + outPutFile.getName().replaceAll(".jar", ""), JavaExec.class);
             javaExec.setWorkingDir(outputFolder);
             javaExec.getAllJvmArgs().add("-jar");
-            List args = new ArrayList();
+            List<String> args = new ArrayList<>();
             args.add(new File(outputFolder + File.separator + outPutFile.getName()).getAbsolutePath());
             args.add("-li=" + new File(skidfuscatorFolder + File.separator + "libs").getAbsolutePath());
             if (exclusionFile.exists()) {
