@@ -196,7 +196,7 @@ public class DependencyFinder {
                 file.createNewFile();
             }
             Files.move(temp.toPath(), file.toPath(), StandardCopyOption.REPLACE_EXISTING);
-            System.out.println("Downloaded " + groupId + ":" + artifactId + ":" + version + " from " + repository);
+            System.out.println("Downloaded " + groupId + ":" + artifactId + ":" + version + " from " + url);
             return finalFile;
         } catch (IOException e) {
             return null;

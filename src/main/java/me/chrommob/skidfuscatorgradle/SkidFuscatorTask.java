@@ -1,13 +1,13 @@
 package me.chrommob.skidfuscatorgradle;
 
 import org.gradle.api.DefaultTask;
+import org.gradle.api.artifacts.DependencySet;
 import org.gradle.api.tasks.JavaExec;
 import org.gradle.api.tasks.TaskAction;
 
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.util.*;
 
 
@@ -34,22 +34,11 @@ public class SkidFuscatorTask extends DefaultTask {
         }
         DependencyFinder dependencyFinder = new DependencyFinder(mavenRepo, skidfuscatorFolder);
         Set<File> compileLibs = getProject().getConfigurations().getByName("compileClasspath").getFiles();
-        Set<File> depJars = getProject().getConfigurations().getByName("compileClasspath").getFiles();
-        for (File depJar : depJars) {
-            File parent = depJar.getParentFile();
-            if (parent == null)
-                continue;
-            File version = parent.getParentFile();
-            if (version == null)
-                continue;
-            File artifact = version.getParentFile();
-            if (artifact == null)
-                continue;
-            File group = artifact.getParentFile();
-            if (group == null)
-                continue;
-            System.out.println("Found dependency: " + group.getName() + ":" + artifact.getName() + ":" + version.getName());
-            Dependency dep = new Dependency(dependencyFinder, group.getName(), artifact.getName(), version.getName(), Collections.singleton("https://repo1.maven.org/maven2/"));
+        DependencySet dependencies = getProject().getConfigurations().getByName("compileClasspath").getAllDependencies();
+        compileLibs.addAll(getProject().getConfigurations().getByName("compileClasspath").getFiles());
+        for (org.gradle.api.artifacts.Dependency dependency : dependencies) {
+            System.out.println("Found dependency: " + dependency.getGroup() + ":" + dependency.getName() + ":" + dependency.getVersion());
+            Dependency dep = new Dependency(dependencyFinder, dependency.getGroup(), dependency.getName(), dependency.getVersion(), Collections.singleton("https://repo1.maven.org/maven2/"));
             compileLibs.addAll(dep.getFiles());
         }
         new File(skidfuscatorFolder + File.separator + "libs").mkdirs();
@@ -75,10 +64,13 @@ public class SkidFuscatorTask extends DefaultTask {
             JavaExec javaExec = getProject().getTasks().create("run" + outPutFile.getName().replaceAll(".jar", ""), JavaExec.class);
             javaExec.setWorkingDir(outputFolder);
             javaExec.getAllJvmArgs().add("-jar");
-            javaExec.setArgs(List.of(new File(outputFolder + File.separator + outPutFile.getName()).getAbsolutePath(), "-li=" + new File(skidfuscatorFolder + File.separator + "libs")));
+            List args = new ArrayList();
+            args.add(new File(outputFolder + File.separator + outPutFile.getName()).getAbsolutePath());
+            args.add("-li=" + new File(skidfuscatorFolder + File.separator + "libs").getAbsolutePath());
             if (exclusionFile.exists()) {
-                javaExec.getArgs().add("-ex=" + exclusionFile.getAbsolutePath());
+                args.add("-ex=" + exclusionFile.getAbsolutePath());
             }
+            javaExec.setArgs(args);
             javaExec.setClasspath(getProject().files().from(skidfuscatorJar));
             javaExec.exec();
             System.out.println("File successfully obfuscated.");
