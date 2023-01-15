@@ -176,7 +176,7 @@ public class DependencyFinder {
             connection.connect();
             temp = new File(temp, artifactId + "-" + version + ".jar");
             if (temp.exists()) {
-                temp.delete();
+                Files.delete(temp.toPath());
             }
             temp.createNewFile();
             try (InputStream inputStream = connection.getInputStream()) {
@@ -201,7 +201,7 @@ public class DependencyFinder {
 
             temp = new File(temp.getParentFile(), artifactId + "-" + version + ".pom");
             if (temp.exists()) {
-                temp.delete();
+                Files.delete(temp.toPath());
             }
 
             temp.createNewFile();
@@ -244,7 +244,11 @@ public class DependencyFinder {
                     new ZipFile(f).close();
                 } catch (ZipException e) {
                     System.out.println("Corrupted file: " + f.getAbsolutePath());
-                    f.delete();
+                    try {
+                        Files.delete(f.toPath());
+                    } catch (IOException ex) {
+                        throw new RuntimeException(ex);
+                    }
                     continue;
                 } catch (IOException e) {
                     continue;
