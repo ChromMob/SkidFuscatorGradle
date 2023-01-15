@@ -1,6 +1,7 @@
 package me.chrommob.skidfuscatorgradle;
 
 import org.gradle.api.DefaultTask;
+import org.gradle.api.Project;
 import org.gradle.api.artifacts.DependencySet;
 import org.gradle.api.tasks.JavaExec;
 import org.gradle.api.tasks.TaskAction;
@@ -37,8 +38,28 @@ public class SkidFuscatorTask extends DefaultTask {
         }
         DependencyFinder dependencyFinder = new DependencyFinder(mavenRepo, skidfuscatorFolder);
         Set<File> compileLibs = getProject().getConfigurations().getByName("compileClasspath").getFiles();
-        DependencySet dependencies = getProject().getConfigurations().getByName("compileClasspath").getAllDependencies();
-        compileLibs.addAll(getProject().getConfigurations().getByName("compileClasspath").getFiles());
+        Set<org.gradle.api.artifacts.Dependency> dependencies = new HashSet<>(getProject().getConfigurations().getByName("compileClasspath").getAllDependencies());
+        for (Project project : getProject().getAllprojects()) {
+            if (project.getConfigurations().getByName("compileClasspath").isCanBeResolved()) {
+                try {
+                    dependencies.addAll(project.getConfigurations().getByName("compileClasspath").getAllDependencies());
+                    compileLibs.addAll(project.getConfigurations().getByName("compileClasspath").getFiles());
+                } catch (Exception ignored) {}
+            }
+        }
+        Project parent = getProject().getParent();
+        while (parent != null) {
+            for (Project project : parent.getAllprojects()) {
+                if (project.getConfigurations().getByName("compileClasspath").isCanBeResolved()) {
+                    try {
+                        dependencies.addAll(project.getConfigurations().getByName("compileClasspath").getAllDependencies());
+                        compileLibs.addAll(project.getConfigurations().getByName("compileClasspath").getFiles());
+                    } catch (Exception ignored) {
+                    }
+                }
+            }
+            parent = parent.getParent();
+        }
         for (org.gradle.api.artifacts.Dependency dependency : dependencies) {
             System.out.println("Found dependency: " + dependency.getGroup() + ":" + dependency.getName() + ":" + dependency.getVersion());
             Dependency dep = new Dependency(dependencyFinder, dependency.getGroup(), dependency.getName(), dependency.getVersion(), Collections.singleton("https://repo1.maven.org/maven2/"));
