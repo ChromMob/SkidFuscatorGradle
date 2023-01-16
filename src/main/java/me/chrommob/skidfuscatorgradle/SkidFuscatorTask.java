@@ -77,8 +77,7 @@ public abstract class SkidFuscatorTask extends DefaultTask {
         }
         for (org.gradle.api.artifacts.Dependency dependency : dependencies) {
             System.out.println("Found dependency: " + dependency.getGroup() + ":" + dependency.getName() + ":" + dependency.getVersion());
-            dependencyFinder.resetDepth();
-            Dependency dep = new Dependency(dependencyFinder, dependency.getGroup(), dependency.getName(), dependency.getVersion(), Collections.singleton("https://repo1.maven.org/maven2/"));
+            Dependency dep = new Dependency(dependencyFinder, dependency.getGroup(), dependency.getName(), dependency.getVersion(), Collections.singleton("https://repo1.maven.org/maven2/"), 0);
             compileLibs.addAll(dep.getFiles());
         }
         new File(skidfuscatorFolder + File.separator + "libs").mkdirs();

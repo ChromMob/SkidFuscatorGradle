@@ -12,21 +12,24 @@ public class Dependency {
     private final Set<String> repositories;
 
     private Set<Dependency> subDependencies;
+    private int depth;
 
 
-    public Dependency(DependencyFinder dependencyFinder, String groupId, String artifactId, String version, Set<String> repositories) {
+    public Dependency(DependencyFinder dependencyFinder, String groupId, String artifactId, String version, Set<String> repositories, int depth) {
         this.finder = dependencyFinder;
         this.groupId = groupId;
         this.artifactId = artifactId;
         this.version = version;
         this.repositories = repositories;
+        this.depth = depth;
     }
 
     public Set<File> getFiles() {
-        if (finder.getDepth() >= finder.getMaxDepth()) {
+        depth++;
+        if (depth >= finder.getMaxDepth()) {
+            System.out.println("Max depth reached for " + this);
             return new HashSet<>();
         }
-        finder.addDepth();
         Set<File> files = new HashSet<>();
         File dep = getFile();
         if (dep == null) {
@@ -75,5 +78,9 @@ public class Dependency {
 
     public Set<String> getRepositories() {
         return repositories;
+    }
+
+    public int getDepth() {
+        return depth;
     }
 }

@@ -23,7 +23,6 @@ import java.util.zip.ZipFile;
 
 public class DependencyFinder {
     private final int maxDepth;
-    private int depth = 0;
     private final File mavenDirectory;
     private final File skidDirectory;
     public DependencyFinder(File mavenDirectory, File skidDirectory, int maxDepth) {
@@ -44,13 +43,13 @@ public class DependencyFinder {
     public DependencyResponse getDependency(Dependency dependency) {
         File file = getFromLocalRepository(dependency.getGroupId(), dependency.getArtifactId(), dependency.getVersion());
         if (file != null) {
-            Set<Dependency> subDependencies = getSubDependencies(file);
+            Set<Dependency> subDependencies = getSubDependencies(file, dependency.getDepth());
             return new DependencyResponse(file, subDependencies);
         }
         for (String repository : dependency.getRepositories()) {
             file = getFromRepository(repository, dependency.getGroupId(), dependency.getArtifactId(), dependency.getVersion());
             if (file != null) {
-                Set<Dependency> subDependencies = getSubDependencies(file);
+                Set<Dependency> subDependencies = getSubDependencies(file, dependency.getDepth());
                 return new DependencyResponse(file, subDependencies);
             }
         }
@@ -58,7 +57,7 @@ public class DependencyFinder {
         return null;
     }
 
-    private Set<Dependency> getSubDependencies(File file) {
+    private Set<Dependency> getSubDependencies(File file, int depth) {
         File parent = file.getParentFile();
         File pom = null;
         if (new File(parent, file.getName().replace(".jar", ".pom")).exists()) {
@@ -152,7 +151,7 @@ public class DependencyFinder {
                 groupId = removeEverythingExceptLettersAndNumbers(groupId);
                 artifactId = removeEverythingExceptLettersAndNumbers(artifactId);
                 version = removeEverythingExceptLettersAndNumbers(version);
-                Dependency subDependency = new Dependency(this, groupId, artifactId, version, repositories);
+                Dependency subDependency = new Dependency(this, groupId, artifactId, version, repositories, depth);
                 dependencies.add(subDependency);
             }
         }
@@ -264,20 +263,7 @@ public class DependencyFinder {
         }
         return null;
     }
-
-    public int getDepth() {
-        return depth;
-    }
-
-    public void addDepth() {
-        depth++;
-    }
-
     public int getMaxDepth() {
         return maxDepth;
-    }
-
-    public void resetDepth() {
-        depth = 0;
     }
 }
