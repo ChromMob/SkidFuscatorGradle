@@ -89,6 +89,15 @@ public abstract class SkidFuscatorTask extends DefaultTask {
             } catch (IOException ignored) {
             }
         }
+        File manualLibs = new File(skidfuscatorFolder + File.separator + "manualLibs");
+        if (manualLibs.listFiles() != null && Objects.requireNonNull(manualLibs.listFiles()).length > 0) {
+            for (File lib : Objects.requireNonNull(manualLibs.listFiles())) {
+                try {
+                    Files.copy(lib.toPath(), new File(skidfuscatorFolder + File.separator + "libs" + File.separator + lib.getName()).toPath());
+                } catch (IOException ignored) {
+                }
+            }
+        }
         for (File lib: Objects.requireNonNull(new File(skidfuscatorFolder + File.separator + "libs").listFiles())) {
             if (lib.getName().endsWith(".jar")) {
                 try {
