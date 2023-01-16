@@ -13,14 +13,15 @@
 
 ![obrazek](https://user-images.githubusercontent.com/62996347/211896196-6a7d3c6e-2410-4315-91f8-1a699655176c.png)
 
-### In your gradle project of choice add it to build.gradle id("me.chrommob.skidfuscatorgradle") version "1.0"
-1. Your build.gradle should look something like this.
+### In your gradle project of choice add it to build.gradle id("me.chrommob.skidfuscatorgradle") version "1.0.2"
 
-![obrazek](https://user-images.githubusercontent.com/62996347/211896962-a3aebde7-1e44-4fa5-af84-de7a8ecb85fc.png)
-
-2. Your setting.gradle like this.
+1. Your setting.gradle like this.
 
 ![obrazek](https://user-images.githubusercontent.com/62996347/211897065-7efdb6a8-9135-4e7e-b58a-45f66edb724f.png)
+
+2. Your build.gradle should look something like this.
+
+![obrazek](https://user-images.githubusercontent.com/62996347/212709866-12e8d695-9aeb-4bf1-9cc7-3f73a4b948ef.png)
 
 ### In the project dir create skidfuscator folder and put skidfuscator.jar into it.
 1. Create folder skifuscator in your project.
