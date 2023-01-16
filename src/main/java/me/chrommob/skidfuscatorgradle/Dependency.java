@@ -23,6 +23,10 @@ public class Dependency {
     }
 
     public Set<File> getFiles() {
+        if (finder.getDepth() >= finder.getMaxDepth()) {
+            return new HashSet<>();
+        }
+        finder.addDepth();
         Set<File> files = new HashSet<>();
         File dep = getFile();
         if (dep == null) {

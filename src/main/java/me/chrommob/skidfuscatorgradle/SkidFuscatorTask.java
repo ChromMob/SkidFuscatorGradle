@@ -20,6 +20,7 @@ public class SkidFuscatorTask extends DefaultTask {
     private final File skidfuscatorFolder = new File(getProject().getProjectDir() + File.separator + "skidfuscator");
     private final File mavenRepo = new File(System.getProperty("user.home") + File.separator + ".m2" + File.separator + "repository");
     private final File exclusionFile = new File(skidfuscatorFolder, "exclusions.txt");
+
     @TaskAction
     /**
      * Runs the obfuscation.
@@ -36,7 +37,7 @@ public class SkidFuscatorTask extends DefaultTask {
                 deleteDirectory(file);
             }
         }
-        DependencyFinder dependencyFinder = new DependencyFinder(mavenRepo, skidfuscatorFolder);
+        DependencyFinder dependencyFinder = new DependencyFinder(mavenRepo, skidfuscatorFolder, 3);
         Set<File> compileLibs = getProject().getConfigurations().getByName("compileClasspath").getFiles();
         Set<org.gradle.api.artifacts.Dependency> dependencies = new HashSet<>(getProject().getConfigurations().getByName("compileClasspath").getAllDependencies());
         for (Project project : getProject().getAllprojects()) {
