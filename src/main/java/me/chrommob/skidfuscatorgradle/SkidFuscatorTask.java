@@ -1,11 +1,12 @@
 package me.chrommob.skidfuscatorgradle;
 
+import org.gradle.api.provider.Property;
 import org.gradle.api.DefaultTask;
 import org.gradle.api.Project;
-import org.gradle.api.artifacts.DependencySet;
+import org.gradle.api.tasks.Input;
 import org.gradle.api.tasks.JavaExec;
+import org.gradle.api.tasks.Optional;
 import org.gradle.api.tasks.TaskAction;
-
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
@@ -15,7 +16,10 @@ import java.util.zip.ZipException;
 import java.util.zip.ZipFile;
 
 
-public class SkidFuscatorTask extends DefaultTask {
+public abstract class SkidFuscatorTask extends DefaultTask {
+    @Input
+    @Optional
+    abstract public Property<Integer> getMaxDepth();
     private final File skidfuscatorJar = new File(getProject().getProjectDir() + File.separator + "skidfuscator", "skidfuscator.jar");
     private final File skidfuscatorFolder = new File(getProject().getProjectDir() + File.separator + "skidfuscator");
     private final File mavenRepo = new File(System.getProperty("user.home") + File.separator + ".m2" + File.separator + "repository");
@@ -26,6 +30,16 @@ public class SkidFuscatorTask extends DefaultTask {
      * Runs the obfuscation.
      */
     public void run() {
+        int maxDepth = 0;
+        if (getMaxDepth().isPresent()) {
+            if (getMaxDepth().get().equals(0)) {
+               throw new IllegalArgumentException("Max depth cannot be 0.");
+            }
+            maxDepth = getMaxDepth().get();
+        } else {
+            maxDepth = 3;
+        }
+        System.out.println("Max depth: " + maxDepth);
         if (!skidfuscatorJar.exists())
             throw new RuntimeException("Skifuscator not found in: " + skidfuscatorJar.getAbsolutePath());
         File output = new File(getProject().getProjectDir() + File.separator + "build" + File.separator + "libs");
@@ -37,7 +51,7 @@ public class SkidFuscatorTask extends DefaultTask {
                 deleteDirectory(file);
             }
         }
-        DependencyFinder dependencyFinder = new DependencyFinder(mavenRepo, skidfuscatorFolder, 3);
+        DependencyFinder dependencyFinder = new DependencyFinder(mavenRepo, skidfuscatorFolder, maxDepth);
         Set<File> compileLibs = getProject().getConfigurations().getByName("compileClasspath").getFiles();
         Set<org.gradle.api.artifacts.Dependency> dependencies = new HashSet<>(getProject().getConfigurations().getByName("compileClasspath").getAllDependencies());
         for (Project project : getProject().getAllprojects()) {
