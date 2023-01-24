@@ -1,29 +1,38 @@
 # SkidFuscatorGradle
 ## How to use?
-### Clone this repo and publish it to local maven.
-![obrazek](https://user-images.githubusercontent.com/62996347/211895035-c32db81d-98b8-4d6e-bad9-9010b0c0077e.png)
+### setting.gradle
 
-1. Extract the zip.
+```groovy
+pluginManagement {
+    repositories {
+        gradlePluginPortal()
+        mavenLocal()
+        maven {
+            url "https://jitpack.io"
+        }
+    }
+    resolutionStrategy {
+        eachPlugin {
+            if (requested.id.id == "me.chrommob.skidfuscatorgradle") {
+                useModule("com.github.ChromMob.SkidFuscatorGradle:SkidFuscatorGradle:master-SNAPSHOT")
+            }
+        }
+    }
+}
 
-![obrazek](https://user-images.githubusercontent.com/62996347/211895609-336a364f-115b-41e8-9684-86e80c5d6f6e.png)
+rootProject.name = 'yourProject'
+```
 
-2. Open CMD or Terminal linux inside the SkidFuscatorGradle folder and execute gradlew.bat publishToMavenLocal on Windows systems. On MacOS and Linux run gradlew publishToMavenLocal.
-  
-3. SkidFuscatorGradle is succesfully installed in your local maven. 
+### build.gradle
 
-![obrazek](https://user-images.githubusercontent.com/62996347/211896196-6a7d3c6e-2410-4315-91f8-1a699655176c.png)
+```groovy
+plugins {
+    id 'java'
+    id 'me.chrommob.skidfuscatorgradle'
+}
+```
 
-### In your gradle project of choice add it to build.gradle id("me.chrommob.skidfuscatorgradle") version "1.0.2"
-
-1. Your setting.gradle like this.
-
-![obrazek](https://user-images.githubusercontent.com/62996347/211897065-7efdb6a8-9135-4e7e-b58a-45f66edb724f.png)
-
-2. Your build.gradle should look something like this.
-
-![obrazek](https://user-images.githubusercontent.com/62996347/214389277-1b071eee-6f17-4b0d-9c3e-a1d46666dab8.png)
-
-3. Optional: If you want to customize how deep we search dependenices configure it using maxDepth variable. The default value is 3 and you should only increase this if you get missing libraries warning.
+### Optional: If you want to customize how deep we search dependenices configure it using maxDepth variable. The default value is 3 and you should only increase this if you get missing libraries warning.
 
 ![obrazek](https://user-images.githubusercontent.com/62996347/212710350-d5a1457a-d45c-45e5-a118-3a6f4f56da88.png)
 
