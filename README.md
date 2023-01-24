@@ -21,7 +21,7 @@
 
 2. Your build.gradle should look something like this.
 
-![obrazek](https://user-images.githubusercontent.com/62996347/212709866-12e8d695-9aeb-4bf1-9cc7-3f73a4b948ef.png)
+![obrazek](https://user-images.githubusercontent.com/62996347/214389277-1b071eee-6f17-4b0d-9c3e-a1d46666dab8.png)
 
 3. Optional: If you want to customize how deep we search dependenices configure it using maxDepth variable. The default value is 3 and you should only increase this if you get missing libraries warning.
 
