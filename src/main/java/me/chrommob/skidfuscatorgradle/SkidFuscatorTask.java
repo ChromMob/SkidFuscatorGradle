@@ -23,7 +23,7 @@ public abstract class SkidFuscatorTask extends DefaultTask {
     private final File skidfuscatorJar = new File(getProject().getProjectDir() + File.separator + "skidfuscator", "skidfuscator.jar");
     private final File skidfuscatorFolder = new File(getProject().getProjectDir() + File.separator + "skidfuscator");
     private final File mavenRepo = new File(System.getProperty("user.home") + File.separator + ".m2" + File.separator + "repository");
-    private final File exclusionFile = new File(skidfuscatorFolder, "exclusions.txt");
+    private final File configFile = new File(skidfuscatorFolder, "config.txt");
 
     @TaskAction
     /**
@@ -47,7 +47,7 @@ public abstract class SkidFuscatorTask extends DefaultTask {
             throw  new RuntimeException("No output file to obfuscate.");
         }
         for (File file : Objects.requireNonNull(skidfuscatorFolder.listFiles())) {
-            if (!file.getName().equals("skidfuscator.jar") && !file.getName().equals("manualLibs") && !file.getName().equals("exclusions.txt")) {
+            if (!file.getName().equals("skidfuscator.jar") && !file.getName().equals("manualLibs") && !file.getName().equals("config.txt")) {
                 deleteDirectory(file);
             }
         }
@@ -137,13 +137,15 @@ public abstract class SkidFuscatorTask extends DefaultTask {
             javaExec.setWorkingDir(outputFolder);
             javaExec.getAllJvmArgs().add("-jar");
             List<String> args = new ArrayList<>();
+            args.add("obfuscate");
             args.add(new File(outputFolder + File.separator + outPutFile.getName()).getAbsolutePath());
             args.add("-li=" + new File(skidfuscatorFolder + File.separator + "libs").getAbsolutePath());
-            if (exclusionFile.exists()) {
-                args.add("-ex=" + exclusionFile.getAbsolutePath());
+            if (configFile.exists()) {
+                args.add("-cfg=" + configFile.getAbsolutePath());
             }
             javaExec.setArgs(args);
             javaExec.setClasspath(getProject().files().from(skidfuscatorJar));
+            System.out.println("Running: " + javaExec.getCommandLine());
             javaExec.exec();
             System.out.println("File successfully obfuscated.");
         }

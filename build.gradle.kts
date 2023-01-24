@@ -8,7 +8,7 @@ plugins {
 }
 
 group = "me.chrommob.skidfuscatorgradle"
-version = "1.0.2"
+version = "1.0.3"
 description = "A gradle plugin to obfuscate your code. Simply put skidfuscator.jar into into projectFolder/skidfuscator/"
 
 repositories {
