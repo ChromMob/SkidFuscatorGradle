@@ -1,4 +1,7 @@
 # SkidFuscatorGradle
+## What is this?
+This plugin integrates with the Gradle build system and automatically obfuscates the code in the jar file, includes all dependencies, so you do not need to manually search for them.
+
 ## How to use?
 ### setting.gradle
 
