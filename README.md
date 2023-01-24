@@ -48,7 +48,7 @@ plugins {
 
 4. If you want to use exclusion put config.txt into the skidfuscator folder. 
 ```HOCON
-exempt[
+exempt: [
     "class{^me\\/chrommob\\/example\\/ExamplePlugin}"
 ]
 ```
