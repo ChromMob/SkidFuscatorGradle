@@ -46,12 +46,18 @@ plugins {
 
 ![obrazek](https://user-images.githubusercontent.com/62996347/211897648-96f86a39-ed47-42ab-8495-2c36c69cf7b5.png)
 
-4. If you want to use exclusion put config.txt into the skidfuscator folder. 
+4. If you want to use exclusion put config.txt into the skidfuscator folder.
+   
+   Official Documentation: https://skidfuscator.dev/docs/config
+
+   config.txt example:
 ```HOCON
 exempt: [
-    "class{^me\\/chrommob\\/example\\/ExamplePlugin}"
+    "class{^me\\/chrommob\\/example\\/ExamplePlugin}",
+    "class{^me\\/chrommob\\/example\\/loader\\/ExampleClass}",
 ]
 ```
+
 
 ### Compile your project like you would always do.
 1. Run skidfuscate task.
