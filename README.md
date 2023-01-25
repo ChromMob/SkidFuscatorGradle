@@ -37,7 +37,11 @@ plugins {
 
 ### Optional: If you want to customize how deep we search dependenices configure it using maxDepth variable. The default value is 3 and you should only increase this if you get missing libraries warning.
 
-![obrazek](https://user-images.githubusercontent.com/62996347/212710350-d5a1457a-d45c-45e5-a118-3a6f4f56da88.png)
+```kotlin
+tasks.withType<SkidFuscatorTask> {
+    maxDepth = 3
+}
+```
 
 ### In the project dir create skidfuscator folder and put skidfuscator.jar into it.
 1. Create folder skifuscator in your project.
