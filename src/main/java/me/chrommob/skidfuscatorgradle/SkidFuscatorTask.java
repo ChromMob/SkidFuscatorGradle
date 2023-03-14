@@ -135,7 +135,9 @@ public abstract class SkidFuscatorTask extends DefaultTask {
 
             JavaExec javaExec = getProject().getTasks().create("run" + outPutFile.getName().replaceAll(".jar", ""), JavaExec.class);
             javaExec.setWorkingDir(outputFolder);
-            javaExec.getAllJvmArgs().add("-jar");
+            List<String> jvmArgs = new ArrayList<>();
+            jvmArgs.add("-jar");
+            javaExec.setAllJvmArgs(jvmArgs);
             List<String> args = new ArrayList<>();
             args.add("obfuscate");
             args.add(new File(outputFolder + File.separator + outPutFile.getName()).getAbsolutePath());
