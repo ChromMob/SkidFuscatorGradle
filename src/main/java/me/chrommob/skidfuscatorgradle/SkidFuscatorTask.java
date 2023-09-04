@@ -123,7 +123,7 @@ public abstract class SkidFuscatorTask extends DefaultTask {
             }
         }
         for (File outPutFile : Objects.requireNonNull(output.listFiles())) {
-            if (outPutFile.getName().endsWith(".jar")) {
+            if (!outPutFile.getName().endsWith(".jar")) {
                 continue;
             };
             String name = outPutFile.getName().replaceAll(".jar", "");
